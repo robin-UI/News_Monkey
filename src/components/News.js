@@ -24,7 +24,7 @@ export default class News extends Component {
         this.state = {
             articles: [],
             loding: true,
-            page: 0,
+            page: 1,
             totalResults: 0
         }
         document.title = `${this.props.category} | News-Monkey`
@@ -32,7 +32,7 @@ export default class News extends Component {
 
     updateNews = async() => {
         this.props.setProgress(10)
-        const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=d0232ff8ad274f4ab644d9f4a24645d3&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+        const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
         let data = await fetch(url);
         this.props.setProgress(50)
         let parsData = await data.json();
@@ -48,25 +48,11 @@ export default class News extends Component {
         this.updateNews();
     }
 
-    // handlePrevClick = () => {
-    //     this.setState({ page: this.state.page - 1 })
-    //     this.updateNews();
-    // }
-
-    
-
-    // handleNextClick = () => {
-    //     this.setState({ page: this.state.page + 1 })
-    //     this.updateNews();
-    // }
-
     fetchMoreData = async () => {
-        console.log(this.state.page);
+        const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`;
         this.setState({page: this.state.page + 1 })
-        const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=d0232ff8ad274f4ab644d9f4a24645d3&page=${this.state.page}&pageSize=${this.props.pageSize}`;
         let data = await fetch(url);
         let parsData = await data.json();
-        console.log(this.state.page);
         this.setState({
             articles: this.state.articles.concat(parsData.articles),
             totalResults: parsData.totalResults,
@@ -85,6 +71,7 @@ export default class News extends Component {
                     loader={<Spinner/>}
                 >
                     <div className="container">
+                    {/* {this.props.setProgress(30)} */}
                     <div className="row">
                         {this.state.articles.map((element) => {
                             return <div className="col-md-4 mb-5" key={element.url} >
@@ -96,12 +83,6 @@ export default class News extends Component {
                 </InfiniteScroll>
 
 
-
-
-                {/* <div className="container d-flex justify-content-evenly">
-                    <button disabled={this.state.page <= 1} type="button" className="btn btn-primary me-3" onClick={this.handlePrevClick} >&larr; Previous</button>
-                    <button disabled={this.state.page + 1 > Math.ceil(this.state.totalResults / this.props.pageSize)} type="button" className="btn btn-primary" onClick={this.handleNextClick} >Next &rarr;</button>
-                </div> */}
             </div>
         )
     }
